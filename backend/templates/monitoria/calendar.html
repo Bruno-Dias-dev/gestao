@@ -1,0 +1,19 @@
+{% extends 'monitoria/base.html' %}
+{% block title %}Calendário{% endblock %}
+{% block heading %}Calendário{% endblock %}
+{% block content %}
+<div class="section-head">
+  <div><h2>Calendário de prazos</h2><small class="muted">Clique em uma tarefa para ver ou editar</small></div>
+  <div><a class="btn btn-outline-secondary btn-sm" href="?month={{ prev_month }}">‹</a> <strong>{{ month_label }}</strong> <a class="btn btn-outline-secondary btn-sm" href="?month={{ next_month }}">›</a></div>
+</div>
+<section class="panel"><div class="calendar-grid">
+  {% for day in weekdays %}<div class="calendar-day-head">{{ day }}</div>{% endfor %}
+  {% for week in weeks %}{% for cell in week %}
+  <div class="calendar-cell">
+    <span class="tiny {% if cell.date.month != current_month %}muted{% endif %}">{{ cell.date.day }}</span>
+    {% for task in cell.events|slice:":2" %}<a class="calendar-event d-block" title="{{ task.title }}" href="{% url 'task_edit' task.pk %}">{{ task.title }}</a>{% endfor %}
+    {% if cell.events|length > 2 %}<details class="calendar-more"><summary>+{{ cell.events|length|add:"-2" }} mais</summary><div class="calendar-extra">{% for task in cell.events|slice:"2:" %}<a class="calendar-event d-block" title="{{ task.title }}" href="{% url 'task_edit' task.pk %}">{{ task.title }}</a>{% endfor %}</div></details>{% endif %}
+  </div>
+  {% endfor %}{% endfor %}
+</div></section>
+{% endblock %}

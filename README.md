@@ -1,34 +1,32 @@
-# Monitor.ia — Gestão
+# Gestão
 
-V1 de gestão de projetos, tarefas, prazos e relatórios. Backend Flask com API JWT e SQLite local por padrão; MySQL opcional no Docker. O Flask também serve o frontend, então não é preciso iniciar o Live Server.
+Aplicação Django de gestão de projetos, tarefas, prazos e relatórios. O frontend usa Django Templates, HTML, CSS e JavaScript para gráficos e arrastar cartões no Kanban. SQLite é o banco padrão para desenvolvimento local.
 
-## Executar
+## Rodar no Windows
 
-### Protótipo local (sem Docker ou MySQL)
-
-Na raiz do projeto, execute:
+Na raiz do projeto, instale as dependências e crie as tabelas:
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r backend/requirements.txt
-python backend/run.py
+.\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt
+.\.venv\Scripts\python.exe backend/manage.py migrate
+.\.venv\Scripts\python.exe backend/manage.py runserver 127.0.0.1:8000
 ```
 
-Abra http://127.0.0.1:5000. O banco SQLite é criado automaticamente em `backend/monitoria.sqlite3`. O primeiro acesso cadastra a conta administradora. Também é possível abrir `backend/templates/index.html` com Live Server: o frontend já envia as chamadas da API e carrega seus arquivos estáticos de `http://127.0.0.1:5000`.
+Abra http://127.0.0.1:8000. No primeiro acesso, o Django pede para criar a conta administradora. O banco novo fica em `backend/monitoria_django.sqlite3`; o banco Flask antigo (`backend/monitoria.sqlite3`) é preservado e não é alterado automaticamente.
 
-### Docker com MySQL
+## Docker
 
-Copie `.env.example` para `.env`, ajuste os segredos e rode `docker compose up --build`. Abra http://localhost:5000.
+Copie `.env.example` para `.env`, altere `SECRET_KEY` e execute `docker compose up --build`. A aplicação ficará em http://127.0.0.1:8000 e gravará o SQLite em `data/`.
 
-## API
+## Funcionalidades
 
-Rotas em `/api/auth`, `/api/dashboard`, `/api/projects`, `/api/tasks`, `/api/reports`. Todas as consultas usam parâmetros. JWT é enviado no header `Authorization: Bearer ...`. O protótipo usa as datas locais do sistema para abertura e cálculo de atraso.
+- Dashboard com contadores e gráficos.
+- Projetos, tarefas, responsáveis, prazos, comentários e histórico.
+- Kanban com mudança de status por arrastar e soltar.
+- Calendário mensal de prazos.
+- Relatórios com filtros e exportação `.xlsx`.
+- Importação TXT com prévia e confirmação; datas no formato `Início: AAAA-MM-DD` e `Prazo: AAAA-MM-DD`.
+- Administração Django em `/admin/`.
 
-## Importar tarefas de um TXT
-
-Use **Importar TXT** na navegação para selecionar um arquivo ou colar texto. A prévia permite revisar os projetos, tarefas, status e prazos antes de gravar. Linhas iniciadas por hífen ou numeração viram tarefas; seções `A fazer`, `Em andamento`, `Aguardando terceiros`, `Finalizado` e `Cancelado` definem o status das tarefas seguintes. Para prazo, inclua `Prazo: AAAA-MM-DD` na mesma linha ou na linha imediatamente abaixo.
-
-## Escopo
-
-O prompt recebido foi truncado no início da descrição das tabelas do banco de dados. A V1 implementa usuários, projetos, tarefas, comentários e histórico; dashboard, Kanban com arrastar e soltar, calendário mensal e relatórios com exportação XLSX. O calendário mostra prazos de entrega; início/conclusão e visões semanais/diárias do FullCalendar ainda não estão incluídos.
+O projeto não usa mais Flask. As páginas ficam em `backend/templates/monitoria/`, os modelos e rotas no app `backend/monitoria/`, e os estilos compartilhados em `backend/static/app.css`.

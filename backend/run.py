@@ -1,6 +1,10 @@
-from app import create_app
+import os
+import sys
 
-app = create_app()
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'monitoria_site.settings')
+from django.core.management import execute_from_command_line
 
 if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000, debug=app.config['DEBUG'])
+    if len(sys.argv) == 1:
+        sys.argv.extend(['runserver', '127.0.0.1:8000'])
+    execute_from_command_line(sys.argv)
